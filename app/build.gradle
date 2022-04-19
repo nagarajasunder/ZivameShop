@@ -38,6 +38,7 @@ android {
 
 dependencies {
 
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def lifecycle_version = "2.4.1"
     def nav_version = "2.4.2"
     def room_version = "2.4.2"
@@ -102,7 +103,6 @@ dependencies {
     implementation 'com.google.dagger:dagger-android-support:2.41'
 
 
-
     implementation "androidx.multidex:multidex:$multidex_version"
 
     //Circular ImageView
@@ -113,4 +113,15 @@ dependencies {
 
     //Splash Screen API
     implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+
+    //GSON
+    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
 }
