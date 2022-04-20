@@ -5,7 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.geekydroid.zivameshop.data.ApiInterface
+import com.geekydroid.zivameshop.entity.Orders
+import com.geekydroid.zivameshop.entity.Product
 import com.geekydroid.zivameshop.entity.Products
+import com.geekydroid.zivameshop.repository.HomeRepository
 import com.geekydroid.zivameshop.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -13,10 +16,14 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeFragmentViewModel @Inject constructor(private val apiInterface: ApiInterface) :
+class HomeFragmentViewModel @Inject constructor(
+    private val apiInterface: ApiInterface,
+    private val repository: HomeRepository
+) :
     ViewModel() {
 
     private val products: MutableLiveData<Resource<Products>> = MutableLiveData()
+    private val cartProductsIdentifier: MutableList<String> = mutableListOf()
 
     init {
         loadProducts()
@@ -42,6 +49,16 @@ class HomeFragmentViewModel @Inject constructor(private val apiInterface: ApiInt
     }
 
     fun getProducts() = products
+
+    fun insertOrder(orders: Product) {
+        viewModelScope.launch {
+            if (!cartProductsIdentifier.contains(orders.name)) {
+                val order = Orders(0, orders, "IN_PROGRESS", orders.price.toDouble())
+                repository.insertOrder(order)
+                cartProductsIdentifier.add(orders.name)
+            }
+        }
+    }
 
 
 }

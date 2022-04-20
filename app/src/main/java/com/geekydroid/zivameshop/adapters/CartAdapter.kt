@@ -4,18 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.geekydroid.zivameshop.R
-import com.geekydroid.zivameshop.entity.Product
-import com.geekydroid.zivameshop.utils.AddToCartListener
+import com.geekydroid.zivameshop.entity.Orders
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class ProductsAdapter(private val listener: AddToCartListener) :
-    ListAdapter<Product, ProductsAdapter.ViewHolder>(ProductCallback()) {
+class CartAdapter : ListAdapter<Orders, CartAdapter.ViewHolder>(CartCallback()) {
     /**
      * Called when RecyclerView needs a new [ViewHolder] of the given type to represent
      * an item.
@@ -39,8 +37,8 @@ class ProductsAdapter(private val listener: AddToCartListener) :
      * @see .getItemViewType
      * @see .onBindViewHolder
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.product_item, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartAdapter.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.cart_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -65,20 +63,19 @@ class ProductsAdapter(private val listener: AddToCartListener) :
      * item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
-    override fun onBindViewHolder(holder: ProductsAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CartAdapter.ViewHolder, position: Int) {
+        val currentOrder = currentList[position]
+        val product = currentOrder.product
 
-        val currentProduct = currentList[position]
         Glide.with(holder.itemView)
-            .load(currentProduct.image_url)
+            .load(product.image_url)
+            .centerCrop()
             .into(holder.productImage)
-        holder.productName.text = currentProduct.name
-        holder.productPrize.text =
-            holder.itemView.context.getString(R.string.product_price, currentProduct.price)
-        holder.ratingBar.rating = currentProduct.rating.toFloat()
+        holder.productName.text = product.name
+        holder.productPrice.text =
+            holder.itemView.context.getString(R.string.product_price, product.price)
 
-        holder.itemView.setOnClickListener {
-            listener.addToCart(currentProduct)
-        }
+
     }
 
     /**
@@ -86,17 +83,16 @@ class ProductsAdapter(private val listener: AddToCartListener) :
      *
      * @return The total number of items in this adapter.
      */
-    override fun getItemCount() = currentList.size
-
+    override fun getItemCount() = currentList.count()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val productImage: ImageView = itemView.findViewById(R.id.product_image)
-        val productName: TextView = itemView.findViewById(R.id.tv_product_name)
-        val productPrize: TextView = itemView.findViewById(R.id.tv_product_price)
-        val ratingBar: RatingBar = itemView.findViewById(R.id.rating_bar)
+
+        val productImage: ImageView = itemView.findViewById(R.id.iv_product_image)
+        val productName: TextView = itemView.findViewById(R.id.tv_title)
+        val productPrice: TextView = itemView.findViewById(R.id.tv_product_price)
     }
 
-    class ProductCallback : DiffUtil.ItemCallback<Product>() {
+    class CartCallback : DiffUtil.ItemCallback<Orders>() {
         /**
          * Called to check whether two objects represent the same item.
          *
@@ -114,8 +110,8 @@ class ProductsAdapter(private val listener: AddToCartListener) :
          *
          * @see Callback.areItemsTheSame
          */
-        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem.name == newItem.name
+        override fun areItemsTheSame(oldItem: Orders, newItem: Orders): Boolean {
+            return oldItem.orderId == newItem.orderId
         }
 
         /**
@@ -147,9 +143,10 @@ class ProductsAdapter(private val listener: AddToCartListener) :
          *
          * @see Callback.areContentsTheSame
          */
-        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+        override fun areContentsTheSame(oldItem: Orders, newItem: Orders): Boolean {
             return oldItem == newItem
         }
 
     }
+
 }

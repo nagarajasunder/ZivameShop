@@ -4,4 +4,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="product_image">Product Image</string>
     <string name="product_price">₹ %1s</string>
+    <string name="my_cart">My Cart</string>
+    <string name="add">add</string>
+    <string name="content_desc_delete">delete_item</string>
+    <string name="view_cart">View Cart</string>
+    <string name="content_desc_checkout">Check out</string>
 </resources>

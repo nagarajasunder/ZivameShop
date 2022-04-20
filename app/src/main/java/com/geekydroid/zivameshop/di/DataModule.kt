@@ -1,8 +1,13 @@
 package com.geekydroid.zivameshop.di
 
 import android.app.Application
+import androidx.room.Room
 import com.geekydroid.zivameshop.ZivameShop
+import com.geekydroid.zivameshop.dao.OrdersDao
 import com.geekydroid.zivameshop.data.ApiInterface
+import com.geekydroid.zivameshop.data.LocalDataSource
+import com.geekydroid.zivameshop.repository.CartRepository
+import com.geekydroid.zivameshop.repository.HomeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,7 +40,26 @@ object DataModule {
             .create(ApiInterface::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun providesLocalDataSource(app: Application): LocalDataSource {
+        return Room.databaseBuilder(
+            app.applicationContext,
+            LocalDataSource::class.java,
+            "zivame_shop.db"
+        ).build()
+    }
 
+    @Provides
+    @Singleton
+    fun providesOrdersDao(datasource: LocalDataSource): OrdersDao = datasource.getOrdersDao()
 
+    @Provides
+    @Singleton
+    fun providesCartRepository(ordersDao: OrdersDao): CartRepository = CartRepository(ordersDao)
+
+    @Provides
+    @Singleton
+    fun providesHomeRepository(ordersDao: OrdersDao): HomeRepository = HomeRepository(ordersDao)
 
 }
